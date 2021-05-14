@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+ObjectID = require("mongodb").ObjectID;
 // const date = require(__dirname + "/date.js");
 const port = 3000;
 // let items = ["by food"];
@@ -13,6 +14,7 @@ mongoose
   .connect("mongodb://localhost:27017/todoListDB", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: false,
   })
   .then((res) => console.log("mongoose connected"));
 
@@ -41,14 +43,13 @@ let todos = [];
 app.get("/", (req, res) => {
   Item.find({}, (err, todos) => {
     if (!err) {
-      console.log("No errors");
       if (todos.length === 0) {
         console.log("No Items");
         Item.insertMany(defaultItems, (err) => {
           if (!err) {
             console.log("Default items succesfully added");
           } else {
-            console.log(err);
+            console.log("1 " + err);
           }
         });
         res.redirect("/");
@@ -56,7 +57,7 @@ app.get("/", (req, res) => {
         res.render("list", { listTitle: "Today", newListItems: todos });
       }
     } else {
-      console.log(err);
+      console.log("2 " + err);
     }
   });
 });
@@ -82,10 +83,13 @@ app.post("/", (req, res) => {
 });
 
 app.post("/delete", (req, res) => {
+  // console.log(typeof req.body.deleteCheckbox);
+
   const idToDelete = req.body.deleteCheckbox;
-  console.log("idToDelete  " + idToDelete);
-  Item.findByIdAndRemove(idToDelete, (err) => {
-    console.log(err);
+  // console.log("idToDelete  " + idToDelete);
+  Item.findByIdAndRemove(idToDelete.trim(), (err) => {
+    console.log("3 " + err);
+    res.redirect("/");
   });
 });
 
