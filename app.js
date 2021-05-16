@@ -2,7 +2,10 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const _ = require("lodash");
-const port = 3000;
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 3000;
+}
 let workItems = [];
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
